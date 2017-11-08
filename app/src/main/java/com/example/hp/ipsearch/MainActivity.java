@@ -1,8 +1,6 @@
 package com.example.hp.ipsearch;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     IPDataAdapter ipDataAdapter;
     List<IPData> list;
-    String[] SearchIP;
+    List<String> SearchIP;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,15 +55,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 SearchIP=splitIPString(textInputLayout.getEditText().getText().toString());//textInputLayout.getEditText().getText().toString().split(";");
-                for(String itemSearchIP:SearchIP){
-                    if(!itemSearchIP.equals(""))searchData(itemSearchIP,jsonp,token);
+                if(SearchIP.size()==0) Snackbar.make(searchbtn, "无有效IP", Snackbar.LENGTH_LONG).show();
+                for(int i=0;i<SearchIP.size();i++){
+                    searchData(SearchIP.get(i),jsonp,token);
                 }
-//                if(NetUtils.isConnected(MainActivity.this)){
-//
-//                }else{
-//
-//                }
-
             }
         });
         clearbtn.setOnClickListener(new View.OnClickListener() {
@@ -95,13 +88,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<IPDataResponse> call, Throwable t) {
-                if(!NetUtils.isConnected(MainActivity.this))
-                    Snackbar.make(searchbtn, "IP:"+ip+"  缓存搜索失败", Snackbar.LENGTH_LONG).show();
+
+                if(!NetUtils.isConnected(MainActivity.this)){
+                    Snackbar.make(searchbtn, "IP:"+ip+"  断网时缓存搜索失败", Snackbar.LENGTH_LONG).show();
+                    list.add(new IPData(ip,"IP:"+ip+"  断网时缓存搜索失败"));
+                }else{
+                    list.add(new IPData(ip,t.getMessage()==null?"失败":t.getMessage()));
+                }
+                ipDataAdapter.notifyDataSetChanged();
+
             }
         });
 
     }
-    String[] splitIPString(String IP){
+    List<String> splitIPString(String IP){
         StringBuffer bf=new StringBuffer();
 
         for(int i=0;i<IP.length();i++){
@@ -111,7 +111,14 @@ public class MainActivity extends AppCompatActivity {
                 bf.append(';');
             }
         }
-        return bf.toString().split(";");
+        String[] temp= bf.toString().split(";");
+        List<String> liString=new ArrayList<>();
+        for(String s:temp){
+            if(!s.equals("")){
+                liString.add(s);
+            }
+        }
+        return liString;
     }
 
 

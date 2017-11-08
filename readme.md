@@ -49,7 +49,7 @@
 #### 多个IP分割
 <pre>
     //先将其他字符进行替换，然后使用splite分割
-    String[] splitIPString(String IP){
+       List<String> splitIPString(String IP){
             StringBuffer bf=new StringBuffer();
     
             for(int i=0;i<IP.length();i++){
@@ -59,8 +59,14 @@
                     bf.append(';');
                 }
             }
-            return bf.toString().split(";");
-     }
+            String[] temp= bf.toString().split(";");
+            List<String> liString=new ArrayList<>();
+            for(String s:temp){
+                if(!s.equals("")){
+                    liString.add(s);
+                }
+            }
+            return liString;
 </pre>
 
 

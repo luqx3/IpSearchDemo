@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="marginTop">10sp</dimen>
-    <dimen name="marginLeft">20sp</dimen>
+    <dimen name="marginLeft">15sp</dimen>
     <dimen name="textSize">14sp</dimen>
 </resources>
